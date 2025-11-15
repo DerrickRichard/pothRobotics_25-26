@@ -17,12 +17,9 @@ public class Silver extends OpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
 
-    // NEW - Ball shooter motor (commented until hardware is added)
+    // Ball shooter motor (commented until hardware is added)
     // private DcMotor shooterMotor = null;
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
@@ -39,7 +36,7 @@ public class Silver extends OpMode {
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // NEW - Initialize shooter motor
+        // Shooter motor initialization (commented out)
         /*
         shooterMotor = hardwareMap.get(DcMotor.class, "shooter_motor");
         shooterMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -49,24 +46,14 @@ public class Silver extends OpMode {
         telemetry.addData("Status", "Initialized");
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, and before they hit PLAY
-     */
     @Override
-    public void init_loop() {
-    }
+    public void init_loop() { }
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
     @Override
     public void start() {
         runtime.reset();
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
     @Override
     public void loop() {
         double leftPower = -gamepad1.left_stick_y;
@@ -80,7 +67,7 @@ public class Silver extends OpMode {
         leftDrive.setPower(leftPower);
         rightDrive.setPower(rightPower);
 
-        // NEW - Ball shooter control using d-pad
+        // Shooter control (commented out)
         /*
         if (gamepad1.dpad_up) {
             shooterMotor.setPower(1.0); // Shoot forward
@@ -94,23 +81,17 @@ public class Silver extends OpMode {
         // Telemetry for joystick input and motor power
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-        // NEW - telemetry.addData("Shooter", "Power (%.2f)", shooterMotor.getPower());
+        // Shooter telemetry (commented out)
+        // telemetry.addData("Shooter", "Power (%.2f)", shooterMotor.getPower());
 
         telemetry.update();
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
     @Override
     public void stop() {
-        // NEW - leftDrive.setPower(0);
-        // NEW - rightDrive.setPower(0);
-        // NEW - shooterMotor.setPower(0);
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+        // Shooter stop (commented out)
+        // shooterMotor.setPower(0);
     }
 }
-
-// Derrick was here...
-
-// Ball shooting stuff, whatever its called
-// NEW - is added before the comments where the ball shooter stuff is added
