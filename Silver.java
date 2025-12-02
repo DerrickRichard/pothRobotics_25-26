@@ -1,4 +1,4 @@
-// This is a basic FTC TeleOp program for a two-motor robot using tank drive.
+// This is a basic FTC TeleOp program for a four-motor robot using tank drive.
 // It allows the driver to control each side of the robot independently using the joysticks.
 // Includes runtime telemetry and motor safety enhancements.
 // Ball shooting mechanism program is implemented, but commented out until hardware is added.
@@ -14,8 +14,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Silver extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
 
     // Ball shooter motor (commented until hardware is added)
     // private DcMotor shooterMotor = null;
@@ -25,16 +27,22 @@ public class Silver extends OpMode {
         telemetry.addData("Status", "Initialized");
 
         // Initialize the hardware variables.
-        leftDrive = hardwareMap.get(DcMotor.class, "front_drive");  // Assuming front_drive is left
-        rightDrive = hardwareMap.get(DcMotor.class, "back_drive");  // Assuming back_drive is right
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive   = hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive  = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        // Reverse one motor to ensure both sides drive forward together.
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        // Reverse one side’s motors to ensure both sides drive forward together.
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Set zero power behavior to BRAKE for better stopping control.
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Shooter motor initialization (commented out)
         /*
@@ -43,7 +51,7 @@ public class Silver extends OpMode {
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         */
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Initialized like a fried chicken bucket from KFC.");
     }
 
     @Override
@@ -64,8 +72,10 @@ public class Silver extends OpMode {
         rightPower = Math.max(-1.0, Math.min(1.0, rightPower));
 
         // Send calculated power to motors
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
+        leftFrontDrive.setPower(leftPower);
+        leftBackDrive.setPower(leftPower);
+        rightFrontDrive.setPower(rightPower);
+        rightBackDrive.setPower(rightPower);
 
         // Shooter control (commented out)
         /*
@@ -89,8 +99,10 @@ public class Silver extends OpMode {
 
     @Override
     public void stop() {
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
+        leftFrontDrive.setPower(0);
+        leftBackDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightBackDrive.setPower(0);
         // Shooter stop (commented out)
         // shooterMotor.setPower(0);
     }
