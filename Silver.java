@@ -68,8 +68,8 @@ public class Silver extends OpMode {
         double rightPower = -gamepad1.right_stick_y;
 
         // Clip power values to stay within [-1.0, 1.0]
-        leftPower = Math.max(-1.0, Math.min(1.0, leftPower));
-        rightPower = Math.max(-1.0, Math.min(1.0, rightPower));
+        leftPower = Math.max(-0.2, Math.min(0.2, leftPower));
+        rightPower = Math.max(-0.2, Math.min(0.2, rightPower));
 
         // Send calculated power to motors
         leftFrontDrive.setPower(leftPower);
