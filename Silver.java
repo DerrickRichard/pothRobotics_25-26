@@ -1,13 +1,14 @@
 // This is a basic FTC TeleOp program for a four-motor robot using tank drive.
 // It allows the driver to control each side of the robot independently using the joysticks.
 // Includes runtime telemetry and motor safety enhancements.
-// Ball shooting mechanism program is implemented, but commented out until hardware is added.
+// Ball shooting mechanism program is implemented.
 
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="TankDrive_TeleOp", group="Concept")
@@ -19,8 +20,9 @@ public class Silver extends OpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    // Ball shooter motor (commented until hardware is added)
-    // private DcMotor shooterMotor = null;
+    // Ball shooter motors
+    private DcMotorEx shooterMotor = null;
+    private DcMotorEx shooterHexMotor = null;
 
     @Override
     public void init() {
@@ -44,12 +46,14 @@ public class Silver extends OpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Shooter motor initialization (commented out)
-        /*
-        shooterMotor = hardwareMap.get(DcMotor.class, "shooter_motor");
+        // Shooter motor initialization
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter_motor");
         shooterMotor.setDirection(DcMotor.Direction.FORWARD);
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        */
+
+        shooterHexMotor = hardwareMap.get(DcMotorEx.class, "shooter_hex_motor");
+        shooterHexMotor.setDirection(DcMotor.Direction.FORWARD);
+        shooterHexMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addData("Status", "Initialized like a fried chicken bucket from KFC.");
     }
@@ -77,22 +81,23 @@ public class Silver extends OpMode {
         rightFrontDrive.setPower(rightPower);
         rightBackDrive.setPower(rightPower);
 
-        // Shooter control (commented out)
-        /*
+        // Shooter control
         if (gamepad1.dpad_up) {
             shooterMotor.setPower(1.0); // Shoot forward
+            shooterHexMotor.setPower(1.0);
         } else if (gamepad1.dpad_down) {
             shooterMotor.setPower(-1.0); // Reverse spin
+            shooterHexMotor.setPower(-1.0);
         } else {
             shooterMotor.setPower(0.0); // Stop shooter
+            shooterHexMotor.setPower(0.0);
         }
-        */
 
         // Telemetry for joystick input and motor power
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-        // Shooter telemetry (commented out)
-        // telemetry.addData("Shooter", "Power (%.2f)", shooterMotor.getPower());
+        telemetry.addData("Shooter", "Power (%.2f)", shooterMotor.getPower());
+        telemetry.addData("Shooter Hex", "Power (%.2f)", shooterHexMotor.getPower());
 
         telemetry.update();
     }
@@ -103,7 +108,8 @@ public class Silver extends OpMode {
         leftBackDrive.setPower(0);
         rightFrontDrive.setPower(0);
         rightBackDrive.setPower(0);
-        // Shooter stop (commented out)
-        // shooterMotor.setPower(0);
+        // Shooter stop
+        shooterMotor.setPower(0);
+        shooterHexMotor.setPower(0);
     }
 }
