@@ -30,7 +30,9 @@ public class Silver extends OpMode {
         telemetry.addData("Status", "Initialized");
 
         // Initialize the hardware variables.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "" +
+                "" +
+                "left_front_drive");
         leftBackDrive   = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive  = hardwareMap.get(DcMotor.class, "right_back_drive");
@@ -73,7 +75,7 @@ public class Silver extends OpMode {
         double leftPower = -gamepad1.left_stick_y;
         double rightPower = -gamepad1.right_stick_y;
 
-        // Clip power values to stay within [-0.2, 0.2]
+        // Clip power values to stay within [-0.75, 0.75]
         leftPower = Range.clip(leftPower, -0.75, 0.75);
         rightPower = Range.clip(rightPower, -0.75, 0.75);
 
@@ -85,13 +87,17 @@ public class Silver extends OpMode {
 
         // Shooter control using triggers
         if (gamepad1.left_trigger > 0.1) {
-            shooterMotor.setPower(1.0);   // Shoot forward
-        } else if (gamepad1.right_trigger > 0.1) {
-            shooterHexMotor.setPower(1.0);
+            shooterMotor.setPower(-1.0);   // Shoot forward
         } else {
-            shooterMotor.setPower(0.0);   // Stop shooter
-            shooterHexMotor.setPower(0.0);
+            shooterMotor.setPower(0.0);    // Stop shooter
         }
+
+        if (gamepad1.right_trigger > 0.1) {
+            shooterHexMotor.setPower(1.0); // Shoot forward
+        } else {
+            shooterHexMotor.setPower(0.0); // Stop shooter
+        }
+
 
         // Telemetry for joystick input and motor power
         telemetry.addData("Status", "Run Time: " + runtime.toString());
