@@ -40,7 +40,7 @@ public class chicken extends LinearOpMode {
             leftDrive.setPower(0.4);
             rightDrive.setPower(0.4);
 
-            sleep(500); // Tune this value based on testing
+            sleep(6000); // Tune this value based on testing
 
             // Stop motors
             leftDrive.setPower(0);
