@@ -1,7 +1,7 @@
-// This is a basic FTC TeleOp program for a four-motor robot using tank drive.
-// It allows the driver to control each side of the robot independently using the joysticks.
+// Basic FTC TeleOp program for a four-motor robot using tank drive.
+// Driver controls each side of the robot independently using joysticks.
 // Includes runtime telemetry and motor safety enhancements.
-// Ball shooting mechanism program is implemented.
+// Ball shooting mechanism is implemented.
 
 package org.firstinspires.ftc.teamcode;
 
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="TankDrive_TeleOp", group="Concept")
 public class Silver extends OpMode {
@@ -49,13 +50,13 @@ public class Silver extends OpMode {
         // Shooter motor initialization
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter_motor");
         shooterMotor.setDirection(DcMotor.Direction.FORWARD);
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // smoother spin-down
 
         shooterHexMotor = hardwareMap.get(DcMotorEx.class, "shooter_hex_motor");
         shooterHexMotor.setDirection(DcMotor.Direction.FORWARD);
-        shooterHexMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterHexMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        telemetry.addData("Status", "Initialized like a fried chicken bucket from KFC.");
+        telemetry.addData("Status", "KFC sounds really good right now...");
     }
 
     @Override
@@ -68,12 +69,13 @@ public class Silver extends OpMode {
 
     @Override
     public void loop() {
+        // Tank drive control
         double leftPower = -gamepad1.left_stick_y;
         double rightPower = -gamepad1.right_stick_y;
 
-        // Clip power values to stay within [-1.0, 1.0]
-        leftPower = Math.max(-0.2, Math.min(0.2, leftPower));
-        rightPower = Math.max(-0.2, Math.min(0.2, rightPower));
+        // Clip power values to stay within [-0.2, 0.2]
+        leftPower = Range.clip(leftPower, -0.5, 0.5);
+        rightPower = Range.clip(rightPower, -0.5, 0.5);
 
         // Send calculated power to motors
         leftFrontDrive.setPower(leftPower);
@@ -81,34 +83,35 @@ public class Silver extends OpMode {
         rightFrontDrive.setPower(rightPower);
         rightBackDrive.setPower(rightPower);
 
-        // Shooter control
-        if (gamepad1.dpad_up) {
-            shooterMotor.setPower(1.0); // Shoot forward
+        // Shooter control using triggers
+        if (gamepad1.left_trigger > 0.1) {
+            shooterMotor.setPower(1.0);   // Shoot forward
             shooterHexMotor.setPower(1.0);
-        } else if (gamepad1.dpad_down) {
-            shooterMotor.setPower(-1.0); // Reverse spin
+        } else if (gamepad1.right_trigger > 0.1) {
+            shooterMotor.setPower(-1.0);  // Reverse spin
             shooterHexMotor.setPower(-1.0);
         } else {
-            shooterMotor.setPower(0.0); // Stop shooter
+            shooterMotor.setPower(0.0);   // Stop shooter
             shooterHexMotor.setPower(0.0);
         }
 
         // Telemetry for joystick input and motor power
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-        telemetry.addData("Shooter", "Power (%.2f)", shooterMotor.getPower());
+        telemetry.addData("Drive Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Shooter Motor", "Power (%.2f)", shooterMotor.getPower());
         telemetry.addData("Shooter Hex", "Power (%.2f)", shooterHexMotor.getPower());
-
         telemetry.update();
     }
 
     @Override
     public void stop() {
+        // Stop drive motors
         leftFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightFrontDrive.setPower(0);
         rightBackDrive.setPower(0);
-        // Shooter stop
+
+        // Stop shooter motors
         shooterMotor.setPower(0);
         shooterHexMotor.setPower(0);
     }
