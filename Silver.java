@@ -74,8 +74,8 @@ public class Silver extends OpMode {
         double rightPower = -gamepad1.right_stick_y;
 
         // Clip power values to stay within [-0.2, 0.2]
-        leftPower = Range.clip(leftPower, -0.5, 0.5);
-        rightPower = Range.clip(rightPower, -0.5, 0.5);
+        leftPower = Range.clip(leftPower, -0.75, 0.75);
+        rightPower = Range.clip(rightPower, -0.75, 0.75);
 
         // Send calculated power to motors
         leftFrontDrive.setPower(leftPower);
@@ -86,10 +86,8 @@ public class Silver extends OpMode {
         // Shooter control using triggers
         if (gamepad1.left_trigger > 0.1) {
             shooterMotor.setPower(1.0);   // Shoot forward
-            shooterHexMotor.setPower(1.0);
         } else if (gamepad1.right_trigger > 0.1) {
-            shooterMotor.setPower(-1.0);  // Reverse spin
-            shooterHexMotor.setPower(-1.0);
+            shooterHexMotor.setPower(1.0);
         } else {
             shooterMotor.setPower(0.0);   // Stop shooter
             shooterHexMotor.setPower(0.0);
