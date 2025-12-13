@@ -1,3 +1,5 @@
+//This code is NOT functional. Do NOT use it on a robot for autonomous.
+
 // Autonomous program to drive forward ~4 inches using timed motor power.
 // No encoders are used, so distance is approximate and must be tuned.
 
