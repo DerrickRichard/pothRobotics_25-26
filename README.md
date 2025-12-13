@@ -27,7 +27,7 @@ Welcome to the Poth FTC robot codebase! This project includes both TeleOp and Au
 
 - **No Encoders**: Drives forward ~4 inches using timed motor power (`sleep()`).
 - **Simple Setup**: Great for quick testing or basic autonomous movement.
-- **Telemetry**: Fun status messages like “Time to fry the chicken” and “Completed chicken frying.”
+- **NOT CURRENTLY FUNCTIONAL!!!!!**
 
 ### What We Still Need to Do:
 - Make sure `"front_drive"` and `"back_drive"` match your motor names in the configuration.
