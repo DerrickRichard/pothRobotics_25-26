@@ -61,10 +61,10 @@ Welcome to the Poth FTC robot codebase! This project includes both TeleOp and Au
 
 ---
 
-## Authors
-
-Derrick Richard and
-Emma Aldrige
+## About the Developers
+### Names
+* Derrick Richard - [Personal Profile](https://derrickrichard.github.io/profile/)
+* Emma Aldrige
 
 ---
 
