@@ -1,7 +1,7 @@
 // Basic FTC TeleOp program for a four-motor robot using tank drive.
-// Driver controls each side of the robot independently using joysticks.
+// Driver controls each side of the robot independently using joysticks,and bumpers/triggers for shooting mechanism,
 // Includes runtime telemetry and motor safety enhancements.
-// Ball shooting mechanism is implemented.
+// Ball shooting mechanism is implemented, along with servo.
 
 package org.firstinspires.ftc.teamcode;
 
