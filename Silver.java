@@ -1,7 +1,7 @@
 // Basic FTC TeleOp program for a four-motor robot using tank drive.
-// Driver controls each side of the robot independently using joysticks,and bumpers/triggers for shooting mechanism,
+// Driver controls each side of the robot independently using joysticks, and bottons for servo.
 // Includes runtime telemetry and motor safety enhancements.
-// Ball shooting mechanism is implemented, along with servo.
+// Ball shooting mechanism is implemented.
 
 package org.firstinspires.ftc.teamcode;
 
@@ -101,10 +101,10 @@ public class Silver extends OpMode {
             shooterHexMotor.setPower(0.0); // Stop shooter
         }
 
-        if (gamepad1.left_bumper) { // stop the servo
+        if (gamepad1.x) { // reverse the servo
             servo.setPosition(0.0);
         }
-        if (gamepad1.right_bumper) { // foraword servo
+        if (gamepad1.b) { // forward servo
             servo.setPosition(1.0);
         }    
 
