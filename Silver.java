@@ -1,8 +1,3 @@
-// Basic FTC TeleOp program for a four-motor robot using tank drive.
-// Driver controls each side of the robot independently using joysticks, and buttons for servo.
-// Includes runtime telemetry and motor safety enhancements.
-// Ball shooting mechanism is implemented.
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -31,12 +26,20 @@ public class Silver extends OpMode {
     // Continuous rotation servo
     private Servo continuousServo;
 
-    // Continuous servo power constants
     // Continuous servo position constants
     private static final double CONTINUOUS_SERVO_REVERSE = 0.0;
     private static final double CONTINUOUS_SERVO_STOP    = 0.5;
     private static final double CONTINUOUS_SERVO_FORWARD = 1.0;
 
+    // ===== NEW: Drive tuning constants =====
+    private static final double MAX_DRIVE_POWER = 0.75;
+    private static final double SLOW_MODE_POWER = 0.40;
+    private static final double DEADZONE = 0.05;
+    private static final double RAMP_RATE = 0.05;
+
+    // ===== NEW: Ramp state =====
+    private double lastLeftPower = 0.0;
+    private double lastRightPower = 0.0;
 
     @Override
     public void init() {
@@ -63,6 +66,12 @@ public class Silver extends OpMode {
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // ===== NEW: Explicit motor modes =====
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Shooter motor initialization
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter_motor");
@@ -91,15 +100,25 @@ public class Silver extends OpMode {
         double leftPower = -gamepad1.left_stick_y;
         double rightPower = -gamepad1.right_stick_y;
 
-        // Clip power values
-        leftPower = Range.clip(leftPower, -0.75, 0.75);
-        rightPower = Range.clip(rightPower, -0.75, 0.75);
+        // ===== NEW: Deadzone =====
+        leftPower  = Math.abs(leftPower)  < DEADZONE ? 0 : leftPower;
+        rightPower = Math.abs(rightPower) < DEADZONE ? 0 : rightPower;
+
+        // ===== NEW: Slow mode =====
+        double driveLimit = gamepad1.left_bumper ? SLOW_MODE_POWER : MAX_DRIVE_POWER;
+
+        leftPower  = Range.clip(leftPower, -driveLimit, driveLimit);
+        rightPower = Range.clip(rightPower, -driveLimit, driveLimit);
+
+        // ===== NEW: Ramp smoothing =====
+        leftPower = Range.clip(leftPower, lastLeftPower - RAMP_RATE, lastLeftPower + RAMP_RATE);
+        rightPower = Range.clip(rightPower, lastRightPower - RAMP_RATE, lastRightPower + RAMP_RATE);
+
+        lastLeftPower = leftPower;
+        lastRightPower = rightPower;
 
         // Send power to drive motors
-        leftFrontDrive.setPower(leftPower);
-        leftBackDrive.setPower(leftPower);
-        rightFrontDrive.setPower(rightPower);
-        rightBackDrive.setPower(rightPower);
+        setDrivePower(leftPower, rightPower);
 
         // Shooter control using triggers
         if (gamepad1.left_trigger > 0.1) {
@@ -117,36 +136,40 @@ public class Silver extends OpMode {
         // Continuous servo control
         if (gamepad1.x) {                 // Reverse servo
             continuousServo.setPosition(CONTINUOUS_SERVO_REVERSE);
-        }
-        else if (gamepad1.b) {            // Forward servo
+        } else if (gamepad1.b) {          // Forward servo
             continuousServo.setPosition(CONTINUOUS_SERVO_FORWARD);
-        }
-        else {                            // Stop servo
+        } else {                          // Stop servo
             continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
         }
 
         // Telemetry
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Drive Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-        telemetry.addData("Shooter Motor", "Power (%.2f)", shooterMotor.getPower());
-        telemetry.addData("Shooter Hex", "Power (%.2f)", shooterHexMotor.getPower());
-        telemetry.addData("Servo Power", continuousServo.getPosition());
+        telemetry.addData("Run Time", runtime.toString());
+        telemetry.addData("Drive", "L: %.2f  R: %.2f", leftPower, rightPower);
+        telemetry.addData("Slow Mode", gamepad1.left_bumper);
+        telemetry.addData("Shooter Motor", shooterMotor.getPower());
+        telemetry.addData("Shooter Hex", shooterHexMotor.getPower());
+        telemetry.addData("Servo Position", continuousServo.getPosition());
         telemetry.update();
     }
 
     @Override
     public void stop() {
         // Stop drive motors
-        leftFrontDrive.setPower(0);
-        leftBackDrive.setPower(0);
-        rightFrontDrive.setPower(0);
-        rightBackDrive.setPower(0);
+        setDrivePower(0, 0);
 
         // Stop shooter motors
         shooterMotor.setPower(0);
         shooterHexMotor.setPower(0);
 
-        // Stop servo
-        continuousServo.setPosition(0);
+        // ===== FIXED BUG: proper servo stop =====
+        continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
+    }
+
+    // ===== NEW: Helper method =====
+    private void setDrivePower(double left, double right) {
+        leftFrontDrive.setPower(left);
+        leftBackDrive.setPower(left);
+        rightFrontDrive.setPower(right);
+        rightBackDrive.setPower(right);
     }
 }
