@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -24,6 +25,7 @@ public class Silver extends OpMode {
     // Ball shooter motors
     private DcMotorEx shooterMotor = null;
     private DcMotorEx shooterHexMotor = null;
+    private Servo servo = null;
 
     @Override
     public void init() {
@@ -36,6 +38,7 @@ public class Silver extends OpMode {
         leftBackDrive   = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive  = hardwareMap.get(DcMotor.class, "right_back_drive");
+        servo = hardwareMap.get(Servo.class, "servo");
 
         // Reverse one side’s motors to ensure both sides drive forward together.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -98,12 +101,20 @@ public class Silver extends OpMode {
             shooterHexMotor.setPower(0.0); // Stop shooter
         }
 
+        if (gamepad1.left_bumper) { // stop the servo
+            servo.setPosition(0.0);
+        }
+        if (gamepad1.right_bumper) { // foraword servo
+            servo.setPosition(1.0);
+        }    
+
 
         // Telemetry for joystick input and motor power
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Drive Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
         telemetry.addData("Shooter Motor", "Power (%.2f)", shooterMotor.getPower());
         telemetry.addData("Shooter Hex", "Power (%.2f)", shooterHexMotor.getPower());
+        telemetry.addData("Set Position", servo.getPosition());
         telemetry.update();
     }
 
