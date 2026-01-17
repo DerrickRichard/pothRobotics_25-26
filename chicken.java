@@ -1,53 +1,94 @@
-//This code is NOT functional. Do NOT use it on a robot for autonomous.
-
-// Autonomous program to drive forward ~4 inches using timed motor power.
-// No encoders are used, so distance is approximate and must be tuned.
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="chickenAuto", group="Autonomous")
+@Autonomous(name="ChickenAuto", group="Autonomous")
 public class chicken extends LinearOpMode {
 
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    // Drive motors
+    private DcMotor leftFrontDrive;
+    private DcMotor leftBackDrive;
+    private DcMotor rightFrontDrive;
+    private DcMotor rightBackDrive;
+
+    // Shooter motors (for safety stop)
+    private DcMotorEx shooterMotor;
+    private DcMotorEx shooterHexMotor;
+
+    // Continuous servo
+    private Servo continuousServo;
+
+    // Servo constants
+    private static final double CONTINUOUS_SERVO_STOP = 0.5;
 
     @Override
     public void runOpMode() {
-        // Map motors to configuration names
-        leftDrive  = hardwareMap.get(DcMotor.class, "front_drive");  // left motor
-        rightDrive = hardwareMap.get(DcMotor.class, "back_drive");   // right motor
 
-        // Set motor directions so both drive forward together
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        // ===== Hardware Mapping =====
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive   = hardwareMap.get(DcMotor.class, "left_back_drive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
+        rightBackDrive  = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        // Set zero power behavior to BRAKE for better stopping control
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shooterMotor    = hardwareMap.get(DcMotorEx.class, "shooter_motor");
+        shooterHexMotor = hardwareMap.get(DcMotorEx.class, "shooter_hex_motor");
 
-        telemetry.addData("Status", "Initialized - Time to fry the chicken");
+        continuousServo = hardwareMap.get(Servo.class, "servo");
+
+        // ===== Motor Directions =====
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        // ===== Zero Power Behavior =====
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooterHexMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        // Ensure everything is stopped before start
+        stopAll();
+
+        telemetry.addData("Status", "Initialized - Chicken ready");
         telemetry.update();
 
-        // Wait for the start button on Driver Station
         waitForStart();
 
         if (opModeIsActive()) {
-            // Drive forward for ~4 inches (adjust time as needed)
-            leftDrive.setPower(0.4);
-            rightDrive.setPower(0.4);
 
-            sleep(6000); // Tune this value based on testing
+            // ===== Drive forward (timed) =====
+            setDrivePower(0.4, 0.4);
+            sleep(800);   // ~4–6 inches (TUNE THIS)
+            setDrivePower(0, 0);
 
-            // Stop motors
-            leftDrive.setPower(0);
-            rightDrive.setPower(0);
-
-            telemetry.addData("Status", "Completed chicken frying");
+            telemetry.addData("Status", "Chicken cooked");
             telemetry.update();
         }
+
+        // Safety stop
+        stopAll();
+    }
+
+    // ===== Helper Methods =====
+    private void setDrivePower(double left, double right) {
+        leftFrontDrive.setPower(left);
+        leftBackDrive.setPower(left);
+        rightFrontDrive.setPower(right);
+        rightBackDrive.setPower(right);
+    }
+
+    private void stopAll() {
+        setDrivePower(0, 0);
+        shooterMotor.setPower(0);
+        shooterHexMotor.setPower(0);
+        continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
     }
 }
