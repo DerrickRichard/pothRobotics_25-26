@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -29,12 +29,14 @@ public class Silver extends OpMode {
     private DcMotorEx shooterHexMotor = null;
 
     // Continuous rotation servo
-    private CRServo continuousServo;
+    private Servo continuousServo;
 
     // Continuous servo power constants
-    private static final double CONTINUOUS_SERVO_STOP = 0.0;
+    // Continuous servo position constants
+    private static final double CONTINUOUS_SERVO_REVERSE = 0.0;
+    private static final double CONTINUOUS_SERVO_STOP    = 0.5;
     private static final double CONTINUOUS_SERVO_FORWARD = 1.0;
-    private static final double CONTINUOUS_SERVO_REVERSE = -1.0;
+
 
     @Override
     public void init() {
@@ -47,8 +49,8 @@ public class Silver extends OpMode {
         rightBackDrive  = hardwareMap.get(DcMotor.class, "right_back_drive");
 
         // Initialize continuous rotation servo
-        continuousServo = hardwareMap.get(CRServo.class, "servo");
-        continuousServo.setPower(CONTINUOUS_SERVO_STOP);
+        continuousServo = hardwareMap.get(Servo.class, "servo");
+        continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
 
         // Reverse one side’s motors to ensure both sides drive forward together.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -114,13 +116,13 @@ public class Silver extends OpMode {
 
         // Continuous servo control
         if (gamepad1.x) {                 // Reverse servo
-            continuousServo.setPower(CONTINUOUS_SERVO_REVERSE);
+            continuousServo.setPosition(CONTINUOUS_SERVO_REVERSE);
         }
         else if (gamepad1.b) {            // Forward servo
-            continuousServo.setPower(CONTINUOUS_SERVO_FORWARD);
+            continuousServo.setPosition(CONTINUOUS_SERVO_FORWARD);
         }
         else {                            // Stop servo
-            continuousServo.setPower(CONTINUOUS_SERVO_STOP);
+            continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
         }
 
         // Telemetry
@@ -128,7 +130,7 @@ public class Silver extends OpMode {
         telemetry.addData("Drive Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
         telemetry.addData("Shooter Motor", "Power (%.2f)", shooterMotor.getPower());
         telemetry.addData("Shooter Hex", "Power (%.2f)", shooterHexMotor.getPower());
-        telemetry.addData("Servo Power", continuousServo.getPower());
+        telemetry.addData("Servo Power", continuousServo.getPosition());
         telemetry.update();
     }
 
@@ -145,6 +147,6 @@ public class Silver extends OpMode {
         shooterHexMotor.setPower(0);
 
         // Stop servo
-        continuousServo.setPower(0);
+        continuousServo.setPosition(0);
     }
 }
