@@ -1,4 +1,4 @@
-FTC Robot Code Repository
+Poth Robotics Code Repository - PiRate Brigade Team #15758
 =========================
 
 This repository contains custom FIRST Tech Challenge (FTC) robot control code written for the `org.firstinspires.ftc.teamcode` package. It includes:
