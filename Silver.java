@@ -23,10 +23,10 @@ public class Silver extends OpMode {
     private DcMotorEx shooterMotor = null;
     private DcMotorEx shooterHexMotor = null;
 
-    // Continuous rotation servo
+    // Continuous rotation servo (actually a NORMAL servo)
     private Servo continuousServo;
 
-    // Continuous servo position constants
+    // Servo position constants
     private static final double CONTINUOUS_SERVO_REVERSE = 0.0;
     private static final double CONTINUOUS_SERVO_STOP    = 0.5;
     private static final double CONTINUOUS_SERVO_FORWARD = 1.0;
@@ -51,9 +51,9 @@ public class Silver extends OpMode {
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive  = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        // Initialize continuous rotation servo
+        // Initialize servo and PARK IT
         continuousServo = hardwareMap.get(Servo.class, "servo");
-        continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
+        continuousServo.setPosition(CONTINUOUS_SERVO_STOP); // FIX: for the servo constant spinning.
 
         // Reverse one side’s motors to ensure both sides drive forward together.
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -82,7 +82,7 @@ public class Silver extends OpMode {
         shooterHexMotor.setDirection(DcMotor.Direction.FORWARD);
         shooterHexMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        telemetry.addData("Status", "KFC sounds really good right now...");
+        telemetry.addData("Status", "EAT MOR CHIKN!!!!");
     }
 
     @Override
@@ -133,13 +133,12 @@ public class Silver extends OpMode {
             shooterHexMotor.setPower(0.0);
         }
 
-        // Continuous servo control
-        if (gamepad1.x) {                 // Reverse servo
+        // Servo control — ONLY move on button press
+        if (gamepad1.x) {
             continuousServo.setPosition(CONTINUOUS_SERVO_REVERSE);
-        } else if (gamepad1.b) {          // Forward servo
+        }
+        else if (gamepad1.b) {
             continuousServo.setPosition(CONTINUOUS_SERVO_FORWARD);
-        } else {                          // Stop servo
-            continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
         }
 
         // Telemetry
@@ -154,6 +153,7 @@ public class Silver extends OpMode {
 
     @Override
     public void stop() {
+
         // Stop drive motors
         setDrivePower(0, 0);
 
@@ -161,7 +161,7 @@ public class Silver extends OpMode {
         shooterMotor.setPower(0);
         shooterHexMotor.setPower(0);
 
-        // ===== FIXED BUG: proper servo stop =====
+        // Park servo safely
         continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
     }
 
