@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name="ChickenAuto", group="Autonomous")
 public class chicken extends LinearOpMode {
@@ -19,12 +18,6 @@ public class chicken extends LinearOpMode {
     private DcMotorEx shooterMotor;
     private DcMotorEx shooterHexMotor;
 
-    // Continuous servo
-    private Servo continuousServo;
-
-    // Servo constants
-    private static final double CONTINUOUS_SERVO_STOP = 0.5;
-
     @Override
     public void runOpMode() {
 
@@ -36,8 +29,6 @@ public class chicken extends LinearOpMode {
 
         shooterMotor    = hardwareMap.get(DcMotorEx.class, "shooter_motor");
         shooterHexMotor = hardwareMap.get(DcMotorEx.class, "shooter_hex_motor");
-
-        continuousServo = hardwareMap.get(Servo.class, "servo");
 
         // ===== Motor Directions =====
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -66,7 +57,7 @@ public class chicken extends LinearOpMode {
 
             // ===== Drive forward (timed) =====
             setDrivePower(0.4, 0.4);
-            sleep(800);   // ~4–6 inches (TUNE THIS)
+            sleep(2000);   // ~4–6 inches (TUNE THIS)
             setDrivePower(0, 0);
 
             telemetry.addData("Status", "Chicken cooked");
@@ -89,6 +80,5 @@ public class chicken extends LinearOpMode {
         setDrivePower(0, 0);
         shooterMotor.setPower(0);
         shooterHexMotor.setPower(0);
-        continuousServo.setPosition(CONTINUOUS_SERVO_STOP);
     }
 }
